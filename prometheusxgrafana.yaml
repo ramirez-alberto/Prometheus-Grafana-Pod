@@ -23,11 +23,17 @@ spec:
     - name: grafana-data
       mountPath: /var/lib/grafana
   - name: blackbox-exporter
-    image: localhost/local-blackbox:1.1
+    image: quay.io/prometheus/blackbox-exporter
+    args:
+      - "--config.file:/config/blackbox.yaml"
     ports:
       - containerPort: 9115
         hostPort: 9115
         name: blackbox-exporter
+    volumeMounts:
+      - mountPath: /config
+        name: config
+        readOnly: true
   volumes:
   - name: prom-data
     persistentVolumeClaim:
@@ -35,3 +41,6 @@ spec:
   - name: grafana-data
     persistentVolumeClaim:
       claimName: grafana-data
+  - name: config
+    configMap:
+      name: blackbox-exporter-config
