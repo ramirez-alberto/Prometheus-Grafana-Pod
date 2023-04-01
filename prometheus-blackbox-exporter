@@ -1,7 +1,3 @@
 FROM quay.io/prometheus/blackbox-exporter:latest
 COPY config.yml /etc/blackbox_exporter/
-<<<<<<< HEAD
 EXPOSE 9115
-=======
-EXPOSE 9115
->>>>>>> 56c3caaa4c8ddc1e533dc9cf29bccd3a2bc47a7b
