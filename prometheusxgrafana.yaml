@@ -4,45 +4,57 @@ metadata:
   name: prometheusxgrafana
 spec:
   containers:
-  - name: prometheus
-    image: quay.io/prometheus/prometheus
-    args:
-      - "--web.enable-lifecycle"
-      - "--config.file=/etc/prometheus/prometheus.yml" 
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries" 
-      - "--web.console.templates=/usr/share/prometheus/consoles" 
-    ports:
-    - containerPort: 9090
-      hostPort: 9090
-      name: prometheus
-    volumeMounts:
-    - name: prom-data
-      mountPath: /prometheus
-    - name: prom-config
-      mountPath: /etc/prometheus
-  - name: grafana
-    image: docker.io/grafana/grafana-enterprise
-    ports:
-    - containerPort: 3000
-      hostPort: 3000
-      name: grafana
-    volumeMounts:
-    - name: grafana-data
-      mountPath: /var/lib/grafana
-  - name: blackbox-exporter
-    image: localhost/local-blackbox:1.1
-    ports:
-      - containerPort: 9115
-        hostPort: 9115
-        name: blackbox-exporter
+    - name: prometheus
+      image: quay.io/prometheus/prometheus
+      args:
+        - "--web.enable-lifecycle"
+        - "--config.file=/etc/prometheus/prometheus.yml"
+        - "--storage.tsdb.path=/prometheus"
+        - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+        - "--web.console.templates=/usr/share/prometheus/consoles"
+      ports:
+        - containerPort: 9090
+          hostPort: 9090
+          name: prometheus
+      volumeMounts:
+        - name: prom-data
+          mountPath: /prometheus
+        - name: prom-config
+          mountPath: /etc/prometheus
+    - name: grafana
+      image: docker.io/grafana/grafana-enterprise
+      ports:
+        - containerPort: 3000
+          hostPort: 3000
+          name: grafana
+      volumeMounts:
+        - name: grafana-data
+          mountPath: /var/lib/grafana
+    - name: blackbox-exporter
+      image: localhost/local-blackbox:1.1
+      ports:
+        - containerPort: 9115
+          hostPort: 9115
+          name: blackbox-exporter
+    - name: alertmanager
+      image: quay.io/prometheus/alertmanager
+      ports:
+        - containerPort: 9093
+          hostPort: 9093
+          name: alertmanager
+      volumeMounts:
+        - name: alertmanager-config
+          mountPath: /etc/alertmanager
   volumes:
-  - name: prom-config
-    hostPath:
-      path: /home/pi/repos/prometheuspod/Prometheus-Grafana-Pod/prometheus
-  - name: prom-data
-    persistentVolumeClaim:
-      claimName: prom-data
-  - name: grafana-data
-    persistentVolumeClaim:
-      claimName: grafana-data
+    - name: prom-config
+      hostPath:
+        path: ./prometheus
+    - name: prom-data
+      persistentVolumeClaim:
+        claimName: prom-data
+    - name: grafana-data
+      persistentVolumeClaim:
+        claimName: grafana-data
+    - name: alertmanager-config
+      hostPath:
+        path: ./alertmanager
